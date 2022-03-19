@@ -1,0 +1,175 @@
+####Final Project Data####
+library(car)
+library(ggplot2)
+library(lsr)
+library(psych)
+
+
+##### Variability Data####
+Pigeon<-c(575, 964, 161, 062, 924, 092,163,003,901,971,998,155)
+U_value<-c(0.125, 0.038,0.05,.045,0.039,0.048,0.499,0.453,0.456,0.489,0.564,0.522)
+Different_Seq<-c(3.5,2.17,3,2.5,2.33,2,7.83,7.33,7,8.33,8.83,8.5)
+Dominant_Seq<-c(1.33,1,1,1,1,1,3.17,3.17,3,2.83,4,3.5)
+
+Variability_Data<-data.frame(Pigeon, Changeover_Group, U_value,Different_Seq,Dominant_Seq)
+Changeover_Group<-c(1,1,1,1,1,1,2,2,2,2,2,2)
+Variability_Data$Changeover_Group<-factor(Variability_Data$Changeover_Group, levels = c(1:2), labels = c("First Changeover", "Final Changeover"))
+
+####Assumptions####
+
+#####Normality####
+
+#QQ Plot
+U_value_QQ<-ggplot(aes(sample=U_value),data=Variability_Data)+ theme(plot.title = element_text(size = 20))
+U_value_QQ+geom_qq()+geom_qq_line()+facet_wrap(~Changeover_Group)
+
+Dominant_QQ<-ggplot(aes(sample=Dominant_Seq),data=Variability_Data)+ theme(plot.title = element_text(size = 20))
+Dominant_QQ+geom_qq()+geom_qq_line()+facet_wrap(~Changeover_Group)
+
+Different_QQ<-ggplot(aes(sample=Different_Seq),data=Variability_Data)+ theme(plot.title = element_text(size = 20))
+Different_QQ+geom_qq()+geom_qq_line()+facet_wrap(~Changeover_Group)
+
+####Histogram####
+Histogram_Uvalue<-ggplot(Variability_Data, aes(U_value)) + theme(legend.position = "none", plot.title= element_text(size=18))
+Histogram_Uvalue + geom_histogram(binwidth = 1, fill="blue") + labs(title = "Histogram of U-value", x="Changeover Group", y="U-value")+facet_wrap(~Changeover_Group)
+
+Histogram_Diff<-ggplot(Variability_Data, aes(Different_Seq)) + theme(legend.position = "none", plot.title= element_text(size=18))
+Histogram_Diff + geom_histogram(binwidth = 1, fill="blue") + labs(title = "Histogram of Different Sequences", x="Changeover Group", y="Different Sequences")+facet_wrap(~Changeover_Group)
+
+Histogram_Dom<-ggplot(Variability_Data, aes(Dominant_Seq)) + theme(legend.position = "none", plot.title= element_text(size=18))
+Histogram_Dom + geom_histogram(binwidth = 1, fill="blue") + labs(title = "Histogram of Dominant Sequences", x="Changeover Group", y="Dominant Sequences")+facet_wrap(~Changeover_Group)
+
+####HOV####
+
+HOV_U_value<- leveneTest(U_value, Changeover_Group, center=mean)
+print(HOV_U_value)
+
+
+HOV_Diff<-leveneTest(Different_Seq, Changeover_Group, center=mean)
+print(HOV_Diff)
+
+
+HOV_Dom<-leveneTest(Dominant_Seq, Changeover_Group, center=mean)
+print(HOV_Dom)
+
+
+####T-test####
+
+IndSampleT_U_Value <-t.test(U_value~Changeover_Group, var.equal = TRUE)
+print(IndSampleT_U_Value)
+
+
+IndSampleT_Diff<-t.test(Different_Seq~Changeover_Group, var.equal=TRUE)
+print(IndSampleT_Diff)
+
+
+IndSampleT_Dom<-t.test(Dominant_Seq~Changeover_Group, var.equal=TRUE)
+print(IndSampleT_Dom)
+
+DescriptivesVar<-describeBy(Variability_Data, list(Variability_Data$Changeover_Group))
+print(DescriptivesVar)
+
+####Bar Chart####
+
+ggplot(Variability_Data, aes(x=Changeover_Group, y=U_value))+geom_bar(stat = "identity")
+
+
+
+
+group<-c(1,2)
+u_value_chart<-c(0.06,0.5)
+u_value_sd<-c(0.03,0.04)
+barchart_data_u_value<-data.frame(group, u_value_chart,u_value_sd)   
+
+different_chart<-c(2.58, 7.97)
+different_sd<-c(0.57, 0.71)
+barchart_different<-data.frame(group, different_chart, different_sd)
+
+dominant_chart<-c(1.05,3.28)
+dominant_sd<-c(0.13,0.42)
+barchart_dominant<-data.frame(group, dominant_chart,dominant_sd)
+
+barchart_dominant$group<-factor(barchart_dominant$group, levels=c(1:2), labels=c("First Changeover", "Final Changeover"))
+
+ggplot(barchart_dominant, aes(x=group, y=dominant_chart))+geom_bar(stat = "identity", color="blue", fill="blue", width = .5)+ labs(title = "Mean Number of Dominant Sequences", x="Changeover Group", y="Number of Dominant Sequences")+theme(text = element_text(size = 20))+geom_errorbar(aes(ymin=dominant_chart-dominant_sd, ymax=dominant_chart+dominant_sd, width=.1))
+
+
+
+Sequence<-c(1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16)
+pigeononesixone<-c(0,0,0,0,0,0,0,0,0,0, 0.007,0,0.007,0,0.977,0.01)
+
+pigeonninenineeight<-c(0, 0, 0,0, 0, 0.3,0.007, 0.045, 0.027,0.033,0.323,0.083,0.002,0.008,0.002,0)
+print(pigeononesixthree)
+
+View(pigeononesixthree)
+
+finalchangeoverpigeon<-data.frame(Sequence, pigeonninenineeight)
+
+firstchangeoverpigeon<-data.frame(Sequence, pigeononesixone)
+
+firstchangeoverpigeon$Sequence<-factor(firstchangeoverpigeon$Sequence, levels=c(1:16), labels=c("LLLL", "RLLL", "LRLL", "RRLL", "LLRL", "RLRL", "LRRL", "RRRL", "LLLR", "RLLR", "LRLR", "RRLR", "LLRR", "RLRR", "LRRR", "RRRR"))
+
+finalchangeoverpigeon$Sequence<-factor(finalchangeoverpigeon$Sequence, levels=c(1:16), labels=c("LLLL", "RLLL", "LRLL", "RRLL", "LLRL", "RLRL", "LRRL", "RRRL", "LLLR", "RLLR", "LRLR", "RRLR", "LLRR", "RLRR", "LRRR", "RRRR"))
+
+ggplot(finalchangeoverpigeon, aes(x=Sequence, y=pigeonninenineeight))+geom_bar(stat = "identity", color="blue", fill="blue")+labs(title = "Relative Frequency of Pigeon in Final CO Group", x= "Sequence", y="Relative Frequency")+theme(text=element_text(size=20))
+
+ggplot(firstchangeoverpigeon, aes(x=Sequence, y=pigeononesixone))+geom_bar(stat = "identity", color="blue", fill="blue")+labs(title = "Relative Frequency of Pigeon in First CO Group", x= "Sequence", y="Relative Frequency")+theme(text=element_text(size=20))
+
+####Post Hoc Analysis####
+
+library(pwr)
+
+IndSamplesCohensD_U_Value<-cohensD(U_value~Changeover_Group, data=Variability_Data)
+print(IndSamplesCohensD_U_Value)
+
+
+U_valuePH<-pwr.t.test(n=12, d=11.59415, sig.level = 0.05, type=c("two.sample"))
+print(U_valuePH)
+
+
+DifferentCohensD<-cohensD(Different_Seq~Changeover_Group, data = Variability_Data)
+print(DifferentCohensD)
+
+
+DifferentPH<-pwr.t.test(n=12, d=8.395853, sig.level = 0.05, type = c("two.sample"))
+print(DifferentPH)
+
+DominantCohensD<-cohensD(Dominant_Seq~Changeover_Group, data = Variability_Data)
+print(DominantCohensD)
+
+DominantPH<-pwr.t.test(n=12, d=7.165956, sig.level = 0.05, type = c("two.sample"))
+print(DominantPH)
+
+
+describeBy(Variability_Data, list(Variability_Data$Changeover_Group))
+
+
+
+####Confidence Intervals####
+Variability_Data$zU_value<-scale(Variability_Data$U_value, center=TRUE, scale=TRUE)
+
+Variability_Data$zDifferent<-scale(Variability_Data$Different_Seq, center=TRUE, scale=TRUE)
+
+
+Variability_Data$zDominant<-scale(Variability_Data$Dominant_Seq, center = TRUE, scale = TRUE)
+
+
+Variability_Data$LowerPercentU_Value<- pnorm(Variability_Data$zU_value)
+Variability_Data$LowerPercentDifferent<-pnorm(Variability_Data$zDifferent)
+Variability_Data$LowerPercentDominant<-pnorm(Variability_Data$zDominant)
+
+
+Variability_Data$UpperPercentU_value<- 1 - pnorm(Variability_Data$zU_value)
+Variability_Data$UpperPercentDifferent<- 1 - pnorm(Variability_Data$zDifferent)
+Variability_Data$UpperPercentDominant<- 1 - pnorm(Variability_Data$zDominant)
+
+library(Rmisc)
+groupedCI.U_value<-group.CI(U_value~Changeover_Group, Variability_Data, ci=0.95)
+print(groupedCI.U_value)
+
+groupedCI.Different<-group.CI(Different_Seq~Changeover_Group, Variability_Data, ci=0.95)
+print(groupedCI.Different)
+
+
+groupedCI.Dominant<-group.CI(Dominant_Seq~Changeover_Group, Variability_Data, ci=0.95)
+print(groupedCI.Dominant)
